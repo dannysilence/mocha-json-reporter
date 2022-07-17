@@ -1,6 +1,6 @@
 {
   "name": "@dannysilence/mocha-json-reporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "author": "",
   "license": "MIT",
-  "keywords": [    
+  "keywords": [
     "mocha",
     "json",
     "reporter"
@@ -24,7 +24,6 @@
   "dependencies": {
     "debug": "^2.2.0",
     "md5": "^2.1.0"
-    
   },
   "devDependencies": {
     "mocha": ">=8.2.0"
