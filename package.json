@@ -1,0 +1,32 @@
+{
+  "name": "@dannysilence/mocha-json-reporter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dannysilence/mocha-json-reporter.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "keywords": [    
+    "mocha",
+    "json",
+    "reporter"
+  ],
+  "bugs": {
+    "url": "https://github.com/dannysilence/mocha-json-reporter/issues"
+  },
+  "homepage": "https://github.com/dannysilence/mocha-json-reporter#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "md5": "^2.1.0"
+    
+  },
+  "devDependencies": {
+    "mocha": ">=8.2.0"
+  }
+}
