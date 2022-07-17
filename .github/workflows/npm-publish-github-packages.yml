@@ -27,6 +27,35 @@ on:
         required: true 
         type: boolean 
 jobs:
+  publish-node:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org/'
+          scope: '@dannysilence'
+      - name: Build package
+        run: |
+          npm ci
+          npm test
+      - name: Patch package version
+        if: github.ref == 'refs/heads/main'
+        run:
+          npm version patch --no-git-tag-version
+      - name: Patch package version
+        if: github.ref == 'refs/heads/develop'
+        run:
+          npm version prepatch --no-git-tag-version
+      - name: Publish Package
+        run:
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
   publish-gpr:
     runs-on: ubuntu-latest
     permissions:
