@@ -42,7 +42,6 @@ jobs:
       - name: Build package
         run: |
           npm ci
-          npm run build
           npm test
       - name: Patch package version
         if: github.ref == 'refs/heads/main'
