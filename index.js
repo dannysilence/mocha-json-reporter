@@ -35,7 +35,7 @@ function MochaJsonReporter (runner, options) {
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
-    console.log('\r\n\r\n'+ JSON.stringify(cleanCycles(test)) +'\r\n\r\n');
+    //console.log('\r\n\r\n'+ JSON.stringify(cleanCycles(test)) +'\r\n\r\n');
 
     const key = suiteTitle(test.suite);
     x[key].passes.push(test)
