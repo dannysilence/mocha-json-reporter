@@ -31,12 +31,10 @@ function MochaJsonReporter (runner, options) {
 
   runner.on(EVENT_TEST_END, function (test) {
     const key = suiteTitle(test.suite);
-    x[key].tests.push(test)
+    x[key].tests.push(test);
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
-    //console.log('\r\n\r\n'+ JSON.stringify(cleanCycles(test)) +'\r\n\r\n');
-
     const key = suiteTitle(test.suite);
     x[key].passes.push(test)
   })
@@ -153,6 +151,7 @@ function clean (test) {
   return {
     title: test.title,
     fullTitle: test.fullTitle(),
+    state: test.state,
     duration: test.duration,
     currentRetry: test.currentRetry(),
     err: cleanCycles(err),
