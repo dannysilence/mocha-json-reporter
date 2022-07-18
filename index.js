@@ -13,45 +13,61 @@ const {
   EVENT_TEST_FAIL,
   EVENT_TEST_END,
   EVENT_RUN_END,
-  EVENT_TEST_PENDING
+  EVENT_TEST_PENDING,
+  EVENT_SUITE_END,
+  EVENT_SUITE_BEGIN
 } = Mocha.Runner.constants
 
 const DEFAULT_REPORT_PATH = 'report-[hash].json'
 
-function Reporter (runner, options) {
+function MochaJSONReporter (runner, options) {
   Mocha.reporters.Base.call(this, runner, options)
   const self = this
-
-  const tests = []
-  const pending = []
-  const failures = []
-  const passes = []
+  const x = {};
 
   runner.on(EVENT_TEST_END, function (test) {
-    tests.push(test)
+    const key = test.suite.fullTitle();
+    x[key].tests.push(test)
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
-    passes.push(test)
+    const key = test.suite.fullTitle();
+    x[key].passes.push(test)
   })
 
   runner.on(EVENT_TEST_FAIL, function (test) {
-    failures.push(test)
+    const key = test.suite.fullTitle();
+    x[key].failures.push(test)
   })
 
   runner.on(EVENT_TEST_PENDING, function (test) {
-    pending.push(test)
+    const key = test.suite.fullTitle();
+    x[key].pending.push(test)
   })
 
-  runner.once(EVENT_RUN_END, function () {
+  runner.on(EVENT_SUITE_BEGIN, function (suite) {
+    const key = suite.fullTitle();
+    x[key] = {
+      tests: [], 
+      pending: [],
+      failures: [],
+      passes:[]
+    }
+  })
+
+  runner.on(EVENT_SUITE_END, function (suite) {
+    const key = suite.fullTitle();
+    
     const obj = {
       stats: self.stats,
-      tests: tests.map(clean),
-      pending: pending.map(clean),
-      failures: failures.map(clean),
-      passes: passes.map(clean)
+      tests: x[key].tests.map(clean),
+      pending: x[key].pending.map(clean),
+      failures: x[key].failures.map(clean),
+      passes: x[key].passes.map(clean)
     }
-    runner.testResults = obj
+
+    runner.testResults = obj;
+
     const json = JSON.stringify(obj, null, 2)
     let fn = DEFAULT_REPORT_PATH
     const { reporterOptions } = options
@@ -63,6 +79,9 @@ function Reporter (runner, options) {
     }
     
     writeJson(json, fn);
+  })
+
+  runner.once(EVENT_RUN_END, function () {
   })
 }
 
@@ -127,4 +146,4 @@ function errorJSON (err) {
   return res
 }
 
-module.exports = Reporter
+module.exports = MochaJSONReporter;
