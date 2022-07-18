@@ -23,6 +23,7 @@
   "homepage": "https://github.com/dannysilence/mocha-json-reporter#readme",
   "dependencies": {
     "debug": "^2.2.0",
+    "lodash": "^4.17.21",
     "md5": "^2.1.0"
   },
   "devDependencies": {

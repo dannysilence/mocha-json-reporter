@@ -2,6 +2,7 @@
 ** based on https://github.com/mocha-community/json-file-reporter/blob/master/src/index.js
 */
 
+const _ = require('lodash');
 const fs = require('fs')
 const path = require('path')
 const Mocha = require('mocha')
@@ -20,33 +21,39 @@ const {
 
 const DEFAULT_REPORT_PATH = 'report-[hash].json'
 
-function MochaJSONReporter (runner, options) {
+function MochaJsonReporter (runner, options) {
+  console.log(JSON.stringify(options));
+  if(options.reporterOptions.enabled === false) return;
+
   Mocha.reporters.Base.call(this, runner, options)
   const self = this
   const x = {};
 
   runner.on(EVENT_TEST_END, function (test) {
-    const key = test.suite.fullTitle();
+    const key = suiteTitle(test.suite);
     x[key].tests.push(test)
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
-    const key = test.suite.fullTitle();
+    console.log('\r\n\r\n'+ JSON.stringify(cleanCycles(test)) +'\r\n\r\n');
+
+    const key = suiteTitle(test.suite);
     x[key].passes.push(test)
   })
 
   runner.on(EVENT_TEST_FAIL, function (test) {
-    const key = test.suite.fullTitle();
+    const key = suiteTitle(test.suite);
     x[key].failures.push(test)
   })
 
   runner.on(EVENT_TEST_PENDING, function (test) {
-    const key = test.suite.fullTitle();
+    const key = suiteTitle(test.suite);
     x[key].pending.push(test)
   })
 
   runner.on(EVENT_SUITE_BEGIN, function (suite) {
-    const key = suite.fullTitle();
+    const key = suiteTitle(suite);
+
     x[key] = {
       tests: [], 
       pending: [],
@@ -56,7 +63,7 @@ function MochaJSONReporter (runner, options) {
   })
 
   runner.on(EVENT_SUITE_END, function (suite) {
-    const key = suite.fullTitle();
+    const key = suiteTitle(suite);
     
     const obj = {
       stats: self.stats,
@@ -67,6 +74,11 @@ function MochaJSONReporter (runner, options) {
     }
 
     runner.testResults = obj;
+
+    if(obj.pending.length === 0 && obj.passes.length === 0 && obj.failures.length === 0) {
+      //TODO
+      return;
+    }
 
     const json = JSON.stringify(obj, null, 2)
     let fn = DEFAULT_REPORT_PATH
@@ -85,6 +97,53 @@ function MochaJSONReporter (runner, options) {
   })
 }
 
+function suiteTitle(suite) {
+  let s = suite;
+  let k = '';  
+  
+  while(s && s.root===false) {
+    k = ''.concat(s.title, k);
+    s = s.parent;
+  }
+  
+  return k === '' ? 'root' : k.trim();
+}
+
+function testConfigList(test) {
+  let x = {}, y = {};
+  //console.log(JSON.stringify(test._testConfig.testConfigList));
+  let overrides = test._testConfig && test._testConfig.testConfigList ? test._testConfig.testConfigList.map(e=>e.overrides) : [];
+  overrides.forEach(override => {
+    if(override && override.env) {
+      let e = override.env;
+      for (const key in e) {
+        if (Object.hasOwnProperty.call(e, key)) {
+          const element = e[key];
+          if (Object.hasOwnProperty.call(x, key)) {
+            let arr = x[key];
+            let val = Array.isArray(element) ? [...element] : [element];
+            val.forEach(v=>{
+              arr.push(v);
+            })
+          } else {
+            x[key] = Array.isArray(element) ? [...element] : [element];
+          }
+        }
+      }
+      // console.log(JSON.stringify(override));
+    }
+  });
+
+  for (const key in x) {
+    if (Object.hasOwnProperty.call(x, key)) {
+      const element = x[key];
+      y[key] = _.uniq(element);
+    }
+  }
+
+  return y;
+}
+
 function clean (test) {
   var err = test.err || {}
   if (err instanceof Error) {
@@ -96,7 +155,8 @@ function clean (test) {
     fullTitle: test.fullTitle(),
     duration: test.duration,
     currentRetry: test.currentRetry(),
-    err: cleanCycles(err)
+    err: cleanCycles(err),
+    testConfig: testConfigList(test)
   }
 }
 
@@ -146,4 +206,4 @@ function errorJSON (err) {
   return res
 }
 
-module.exports = MochaJSONReporter;
+module.exports = MochaJsonReporter;
