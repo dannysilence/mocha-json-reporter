@@ -13,6 +13,7 @@ const {
   EVENT_TEST_PASS,
   EVENT_TEST_FAIL,
   EVENT_TEST_END,
+  EVENT_TEST_BEGIN, 
   EVENT_RUN_END,
   EVENT_TEST_PENDING,
   EVENT_SUITE_END,
@@ -31,13 +32,25 @@ function MochaJsonReporter (runner, options) {
 
   runner.on(EVENT_TEST_END, function (test) {
     const key = suiteTitle(test.suite);
-    x[key].tests.push(test);
+    //x[key].tests.push(test);
+    for(let i = 0;i<x[key].tests.length;i++){
+      const item = x[key].tests[i];
+      if(item.fullTitle() === test.fullTitle()) {
+        x[key].tests[i] = test;
+        break;
+      } 
+    } 
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
     const key = suiteTitle(test.suite);
     x[key].passes.push(test)
   })
+  
+  //runner.on(EVENT_TEST_BEGIN, function (test) {
+  //  const key = suiteTitle(test.suite);
+  //  x[key].passes.push(test)
+  //})
 
   runner.on(EVENT_TEST_FAIL, function (test) {
     const key = suiteTitle(test.suite);
@@ -56,8 +69,21 @@ function MochaJsonReporter (runner, options) {
       tests: [], 
       pending: [],
       failures: [],
-      passes:[]
-    }
+      passes:[], 
+    };
+    
+    suite.tests.forEach(test=>{
+      x[key].tests.push({
+        title: test.title,
+        fullTitle: () => test.fullTitle() ,
+        state:'skipped',
+        fileName: test.invocationDetails?.relativeFile?? '',
+        testConfig: testConfigList(test), 
+        duration: test.duration,
+        currentRetry: () => test.currentRetry(),
+        err: cleanCycles(err),
+      });
+    }) 
   })
 
   runner.on(EVENT_SUITE_END, function (suite) {
