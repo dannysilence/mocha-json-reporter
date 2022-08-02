@@ -73,6 +73,10 @@ function MochaJsonReporter (runner, options) {
     };
     
     suite.tests.forEach(test=>{
+      var err = test.err || {}
+      if (err instanceof Error) {
+        err = errorJSON(err)
+      }
       x[key].tests.push({
         title: test.title,
         fullTitle: () => test.fullTitle() ,
