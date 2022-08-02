@@ -181,7 +181,7 @@ function clean (test) {
   return {
     title: test.title,
     fullTitle: test.fullTitle(),
-    fileName: test.invocationDetails.relativeFile,
+    fileName: test.invocationDetails?.relativeFile?? '',
     state: test.state,
     duration: test.duration,
     currentRetry: test.currentRetry(),
