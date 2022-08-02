@@ -33,14 +33,14 @@ function MochaJsonReporter (runner, options) {
 
   runner.on(EVENT_TEST_END, function (test) {
     const key = suiteTitle(test.suite);
-    //x[key].tests.push(test);
-    for(let i = 0;i<x[key].tests.length;i++){
-      const item = x[key].tests[i];
-      if(item.fullTitle() === test.fullTitle()) {
-        x[key].tests[i] = test;
-        break;
-      } 
-    } 
+    x[key].tests.push(test);
+    // for(let i = 0;i<x[key].tests.length;i++){
+    //   const item = x[key].tests[i];
+    //   if(item.fullTitle() === test.fullTitle()) {
+    //     x[key].tests[i] = test;
+    //     // break;
+    //   } 
+    // } 
   })
 
   runner.on(EVENT_TEST_PASS, function (test) {
@@ -64,31 +64,31 @@ function MochaJsonReporter (runner, options) {
   })
 
   runner.on(EVENT_SUITE_BEGIN, function (suite) {
-    const key = suiteTitle(suite);
+    // const key = suiteTitle(suite);
 
-    x[key] = {
-      tests: [], 
-      pending: [],
-      failures: [],
-      passes:[], 
-    };
+    // x[key] = {
+    //   tests: [], 
+    //   pending: [],
+    //   failures: [],
+    //   passes:[], 
+    // };
     
-    suite.tests.forEach(test=>{
-      var err = test.err || {}
-      if (err instanceof Error) {
-        err = errorJSON(err)
-      }
-      x[key].tests.push({
-        title: test.title,
-        fullTitle: () => test.fullTitle() ,
-        state:'skipped',
-        fileName: test.invocationDetails?.relativeFile?? '',
-        testConfig: testConfigList(test), 
-        duration: test.duration,
-        currentRetry: () => test.currentRetry(),
-        err: cleanCycles(err),
-      });
-    }) 
+    // suite.tests.forEach(test=>{
+    //   var err = test.err || {}
+    //   if (err instanceof Error) {
+    //     err = errorJSON(err)
+    //   }
+    //   x[key].tests.push({
+    //     title: test.title,
+    //     fullTitle: () => test.fullTitle() ,
+    //     state:'skipped',
+    //     fileName: test.invocationDetails?.relativeFile?? '',
+    //     testConfig: testConfigList(test), 
+    //     duration: test.duration,
+    //     currentRetry: () => test.currentRetry(),
+    //     err: cleanCycles(err),
+    //   });
+    // }) 
   })
 
   runner.on(EVENT_SUITE_END, function (suite) {
