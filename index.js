@@ -64,15 +64,26 @@ function MochaJsonReporter (runner, options) {
   })
 
   runner.on(EVENT_SUITE_BEGIN, function (suite) {
-    // const key = suiteTitle(suite);
+    const key = suiteTitle(suite);
 
-    // x[key] = {
-    //   tests: [], 
-    //   pending: [],
-    //   failures: [],
-    //   passes:[], 
-    // };
-    
+    x[key] = {
+      tests: [], 
+      pending: [],
+      failures: [],
+      passes:[], 
+    };
+    suite.tests.forEach(test=>{
+        x[key].tests.push({
+            title: test.title,
+            fullTitle: () => test.fullTitle() ,
+            state:'skipped',
+            fileName: test.invocationDetails?.relativeFile?? '',
+            testConfig: testConfigList(test), 
+            duration: test.duration,
+            currentRetry: () => test.currentRetry(),
+            err: '',
+          });
+        });
     // suite.tests.forEach(test=>{
     //   var err = test.err || {}
     //   if (err instanceof Error) {
