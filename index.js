@@ -351,13 +351,37 @@ function cleanCycles (obj) {
  * @param {string} filePath - path to output file
  */
 function writeJson(json, filePath){
-  if (filePath) {
-    if (filePath.indexOf('[hash]') !== -1) {
-      filePath = filePath.replace('[hash]', md5(json));
+  function fn2X(doc, def = 'result.xml') {
+    const s1 = 'file=\"';
+    const s2 = `cypress\\e2e\\`;
+
+    var p1 = doc.indexOf(s1) + 6;
+    if (p1 !== -1) {
+      var s3 = doc.substring(p1);
+      var p2 = s3.indexOf('"');
+      var s4 = s3.substring(0, p2);
+
+      if (s4.startsWith(s2)) { s4 = s4.replace(s2, ''); }
+      if (s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/'); }
+
+      console.info('json file name:' + s4);
+
+      return s4;
     }
 
-    debug('writing file to', filePath);
-    fs.mkdirSync(path.dirname(filePath),{recursive :true});
+    return def;
+  }
+
+  if (filePath) {
+    if (filePath.indexOf('[hash]') !== -1) {
+      filePath = filePath.replace('[hash]', md5(xml));
+    }
+    if (filePath.indexOf('[spec]') !== -1) {
+      filePath = filePath.replace('[spec]', fn2X(xml));
+    }
+
+    console.info('writing file to', filePath);
+    mkdirp.sync(path.dirname(filePath));
 
     try {
         fs.writeFileSync(filePath, json, 'utf-8');
