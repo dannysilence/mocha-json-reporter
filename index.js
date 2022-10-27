@@ -351,7 +351,7 @@ function cleanCycles (obj) {
  * @param {string} filePath - path to output file
  */
 function writeJson(json, filePath){
-  function fn2X(doc, def = 'result.xml') {
+  function fn2X(doc, def = 'result.json') {
     const s1 = 'file=\"';
     const s2 = `cypress\\e2e\\`;
 
@@ -363,8 +363,6 @@ function writeJson(json, filePath){
 
       if (s4.startsWith(s2)) { s4 = s4.replace(s2, ''); }
       if (s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/'); }
-
-      // console.info('json file name:' + s4);
 
       return s4;
     }
