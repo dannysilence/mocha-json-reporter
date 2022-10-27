@@ -7,13 +7,13 @@ const fs = require('fs')
 const path = require('path')
 const Mocha = require('mocha')
 const debug = require('debug')('mocha-json-reporter');
-const md5 = require('md5');  
+const md5 = require('md5');
 
 const {
   EVENT_TEST_PASS,
   EVENT_TEST_FAIL,
   EVENT_TEST_END,
-  EVENT_TEST_BEGIN, 
+  EVENT_TEST_BEGIN,
   EVENT_RUN_END,
   EVENT_TEST_PENDING,
   EVENT_SUITE_END,
@@ -22,9 +22,9 @@ const {
 
 const DEFAULT_REPORT_PATH = 'report-[hash].json'
 
-function MochaJsonReporter (runner, options) {
+function MochaJsonReporter(runner, options) {
   console.log(JSON.stringify(options));
-  if(options.reporterOptions.enabled === false) return;
+  if (options.reporterOptions.enabled === false) return;
   const minimal = (options.reporterOptions.minimal === true);
 
   Mocha.reporters.Base.call(this, runner, options)
@@ -47,7 +47,7 @@ function MochaJsonReporter (runner, options) {
     const key = suiteTitle(test.suite);
     x[key].passes.push(test)
   })
-  
+
   //runner.on(EVENT_TEST_BEGIN, function (test) {
   //  const key = suiteTitle(test.suite);
   //  x[key].passes.push(test)
@@ -67,23 +67,23 @@ function MochaJsonReporter (runner, options) {
     const key = suiteTitle(suite);
 
     x[key] = {
-      tests: [], 
+      tests: [],
       pending: [],
       failures: [],
-      passes:[], 
+      passes: [],
     };
-    suite.tests.forEach(test=>{
-        x[key].tests.push({
-            title: test.title,
-            fullTitle: () => test.fullTitle() ,
-            state:'skipped',
-            fileName: test.invocationDetails?.relativeFile?? '',
-            testConfig: testConfigList(test), 
-            duration: test.duration,
-            currentRetry: () => test.currentRetry(),
-            err: '',
-          });
-        });
+    suite.tests.forEach(test => {
+      x[key].tests.push({
+        title: test.title,
+        fullTitle: () => test.fullTitle(),
+        state: 'skipped',
+        fileName: test.invocationDetails?.relativeFile ?? '',
+        testConfig: testConfigList(test),
+        duration: test.duration,
+        currentRetry: () => test.currentRetry(),
+        err: '',
+      });
+    });
     // suite.tests.forEach(test=>{
     //   var err = test.err || {}
     //   if (err instanceof Error) {
@@ -104,7 +104,7 @@ function MochaJsonReporter (runner, options) {
 
   runner.on(EVENT_SUITE_END, function (suite) {
     const key = suiteTitle(suite);
-    
+
     const obj = {
       stats: self.stats,
       tests: x[key].tests.map(clean),
@@ -115,7 +115,7 @@ function MochaJsonReporter (runner, options) {
 
     runner.testResults = obj;
 
-    if(obj.pending.length === 0 && obj.passes.length === 0 && obj.failures.length === 0) {
+    if (obj.pending.length === 0 && obj.passes.length === 0 && obj.failures.length === 0) {
       //TODO
       return;
     }
@@ -129,7 +129,7 @@ function MochaJsonReporter (runner, options) {
         fn = output
       }
     }
-    
+
     writeJson(json, fn);
   })
 
@@ -139,22 +139,22 @@ function MochaJsonReporter (runner, options) {
 
 function suiteTitle(suite) {
   let s = suite;
-  let k = '';  
-  
-  while(s && s.root===false) {
+  let k = '';
+
+  while (s && s.root === false) {
     k = ''.concat(s.title, k);
     s = s.parent;
   }
-  
+
   return k === '' ? 'root' : k.trim();
 }
 
 function testConfigList(test) {
   let x = {}, y = {};
   //console.log(JSON.stringify(test._testConfig.testConfigList));
-  let overrides = test._testConfig && test._testConfig.testConfigList ? test._testConfig.testConfigList.map(e=>e.overrides) : [];
+  let overrides = test._testConfig && test._testConfig.testConfigList ? test._testConfig.testConfigList.map(e => e.overrides) : [];
   overrides.forEach(override => {
-    if(override && override.env) {
+    if (override && override.env) {
       let e = override.env;
       for (const key in e) {
         if (Object.hasOwnProperty.call(e, key)) {
@@ -162,7 +162,7 @@ function testConfigList(test) {
           if (Object.hasOwnProperty.call(x, key)) {
             let arr = x[key];
             let val = Array.isArray(element) ? [...element] : [element];
-            val.forEach(v=>{
+            val.forEach(v => {
               arr.push(v);
             })
           } else {
@@ -184,7 +184,7 @@ function testConfigList(test) {
   return y;
 }
 
-function clean (test) {
+function clean(test) {
   var err = test.err || {}
   if (err instanceof Error) {
     err = errorJSON(err)
@@ -193,7 +193,7 @@ function clean (test) {
   return {
     title: test.title,
     fullTitle: test.fullTitle(),
-    fileName: test.invocationDetails?.relativeFile?? '',
+    fileName: test.invocationDetails?.relativeFile ?? '',
     state: test.state,
     duration: test.duration,
     currentRetry: test.currentRetry(),
@@ -202,7 +202,7 @@ function clean (test) {
   }
 }
 
-function cleanCycles (obj) {
+function cleanCycles(obj) {
   const cache = []
   return JSON.parse(
     JSON.stringify(obj, function (key, value) {
@@ -227,8 +227,8 @@ function writeJson(json, filePath) {
     var def = 'result';
     if (doc && doc.tests && doc.tests.length > 0) {
       var s4 = doc.tests[0].fileName ?? def;
-      if(s4.includes(`cypress\\e2e\\`)) { s4 = s4.replace(`cypress\\e2e`, '');}
-      if(s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/');}
+      if (s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/'); }
+      if (s4.includes(`cypress/e2e/`)) { s4 = s4.replace(`cypress/e2e/`, ''); }
       return s4;
     }
     return def;
