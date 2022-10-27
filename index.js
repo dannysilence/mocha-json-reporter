@@ -226,7 +226,7 @@ function writeJson(json, filePath){
       filePath = filePath.replace('[hash]', md5(json));
     }
     if (filePath.indexOf('[spec]') !== -1) {
-      filePath = filePath.replace('[spec]', fn2X(json));
+      filePath = filePath.replace('[spec]', fn2X(JSON.parse(json)));
     }
 
     console.info('writing json file to', filePath);
