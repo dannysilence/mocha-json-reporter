@@ -226,7 +226,10 @@ function writeJson(json, filePath) {
   function fn2X(doc) {
     var def = 'result';
     if (doc && doc.tests && doc.tests.length > 0) {
-      return doc.tests[0].fileName ?? def;
+      var s4 = doc.tests[0].fileName ?? def;
+      if(s4.includes(`cypress\\e2e\\`)) { s4 = s4.replace(`cypress\\e2e`, '');}
+      if(s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/');}
+      return s4;
     }
     return def;
   }
