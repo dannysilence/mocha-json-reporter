@@ -364,7 +364,7 @@ function writeJson(json, filePath){
       if (s4.startsWith(s2)) { s4 = s4.replace(s2, ''); }
       if (s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/'); }
 
-      console.info('json file name:' + s4);
+      // console.info('json file name:' + s4);
 
       return s4;
     }
@@ -374,13 +374,13 @@ function writeJson(json, filePath){
 
   if (filePath) {
     if (filePath.indexOf('[hash]') !== -1) {
-      filePath = filePath.replace('[hash]', md5(xml));
+      filePath = filePath.replace('[hash]', md5(json));
     }
     if (filePath.indexOf('[spec]') !== -1) {
-      filePath = filePath.replace('[spec]', fn2X(xml));
+      filePath = filePath.replace('[spec]', fn2X(json));
     }
 
-    console.info('writing file to', filePath);
+    console.info('writing json file to', filePath);
     mkdirp.sync(path.dirname(filePath));
 
     try {
