@@ -7,7 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const Mocha = require('mocha')
 const debug = require('debug')('mocha-json-reporter');
-const md5 = require('md5');
+const md5 = require('md5');  
 
 const {
   EVENT_TEST_PASS,
