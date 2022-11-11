@@ -224,11 +224,14 @@ function cleanCycles(obj) {
  */
 function writeJson(json, filePath) {
   function fn2X(doc) {
+    const s2 = `cypress/e2e/`;
     var def = 'result';
     if (doc && doc.tests && doc.tests.length > 0) {
       var s4 = doc.tests[0].fileName ?? def;
-      if (s4.includes(`\\`)) { s4 = s4.replace(`\\`, '/'); }
-      if (s4.includes(`cypress/e2e/`)) { s4 = s4.replace(`cypress/e2e/`, ''); }
+      if (s4.includes(`\\`)) { s4 = s4.replace(/\\/g, '/'); }
+      if (s4.includes(s2)) { s4 = s4.replace(/cypress\/e2e\//g, ''); }
+      if (s4.includes(`.cy.js`)) { s4 = s4.replace(/\.cy\.js/g, ''); }
+      if (s4.includes(`.cy.ts`)) { s4 = s4.replace(/\.cy\.ts/g, ''); }
       return s4;
     }
     return def;
