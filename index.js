@@ -23,7 +23,7 @@ const {
 const DEFAULT_REPORT_PATH = 'report-[hash].json'
 
 function MochaJsonReporter(runner, options) {
-  console.log(JSON.stringify(options));
+  //console.log(JSON.stringify(options));
   if (options.reporterOptions.enabled === false) return;
   const minimal = (options.reporterOptions.minimal === true);
 
