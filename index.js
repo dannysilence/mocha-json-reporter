@@ -245,7 +245,7 @@ function writeJson(json, filePath) {
       filePath = filePath.replace('[spec]', fn2X(JSON.parse(json)));
     }
 
-    console.info('writing json file to', filePath);
+    //console.info('writing json file to', filePath);
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
     try {
